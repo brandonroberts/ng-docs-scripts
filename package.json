@@ -4,11 +4,18 @@
   "description": "Helper scripts to manage docs PRs",
   "main": "index.js",
   "scripts": {
+    "triage": "ts-node src/index.ts",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "",
   "license": "MIT",
   "devDependencies": {
-    "@types/node": "^10.12.12"
+    "@types/node": "^10.12.12",
+    "ts-node": "^7.0.1"
+  },
+  "dependencies": {
+    "@octokit/rest": "^16.1.0",
+    "dotenv": "^6.2.0",
+    "typescript": "3.1.1"
   }
 }
