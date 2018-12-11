@@ -1,15 +1,15 @@
 const octokit = require('@octokit/rest')();
 const dotenv = require('dotenv');
-const args = require('yargs').argv;
 
 dotenv.config();
 
 const token = process.env.GITHUB_TOKEN;
 
-const flags = {
+const flags: { [key:string]: string } = {
   preview: 'aio: preview',
   docs: 'comp: docs',
   effort: 'effort1: hours',
+  cleanup: 'PR action: cleanup',
   review: 'PR action: review',
   targets: 'PR target: master & patch',
   blocked: 'PR state: blocked',
@@ -29,6 +29,7 @@ const flags = {
  * aio: preview
  * comp: docs
  * effort1: hours
+ * PR action: cleanup
  * PR action: review
  * PR target: master & patch
  * PR state: blocked
@@ -51,13 +52,13 @@ async function addLabels(prNumber: number, labels: string[], owner = 'angular', 
   console.log('Result', result);
 }
 
-function getFlags() {
+function getLabels(args: { [key: string]: any}) {
   let labels = [];
+  console.log('args', args);
 
   // common flag
   if (args.common) {
     labels.push(...[
-      flags.preview,
       flags.docs,
       flags.effort,
       flags.low,
@@ -66,14 +67,29 @@ function getFlags() {
       flags.fix
     ]);
   }
+
+  // get additional labels
+  const flagLabels = Object.entries(args).reduce((currentLabels: string[], [key, value]: [string, any]) => {
+    if (flags[key]) {
+      currentLabels.push(flags[key]);
+    }
+
+    return currentLabels;
+  }, []);
+
+  return [...labels, ...flagLabels];
 }
 
 function main() {
+  const cliArgs = require('yargs').argv;
+  const prNumber = cliArgs._[0];
+
   console.log('authenticate');
   octokit.authenticate({ type: 'token', token });
 
-  console.log('add label');
-  addLabels(1, ['enhancement']);
+  const labels = getLabels(cliArgs);
+  console.log('add labels', prNumber, labels);
+  addLabels(prNumber, labels);
 }
 
 main();
