@@ -16,7 +16,7 @@ const flags: { [key:string]: string } = {
   low: 'risk: low',
   comm: 'state: community',
   edit: 'subtype: docs-edit',
-  fix: 'type: bugfix',
+  fix: 'type: bug/fix',
   feat: 'type: feature',
   ref: 'type: refactor'
 };
@@ -54,7 +54,6 @@ async function addLabels(prNumber: number, labels: string[], owner = 'angular', 
 
 function getLabels(args: { [key: string]: any}) {
   let labels = [];
-  console.log('args', args);
 
   // common flag
   if (args.common) {
@@ -64,7 +63,7 @@ function getLabels(args: { [key: string]: any}) {
       flags.low,
       flags.targets,
       flags.comm,
-      flags.fix
+      args.ref ? flags.ref : (args.feat ? flags.feat : flags.fix)
     ]);
   }
 
