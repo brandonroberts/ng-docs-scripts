@@ -82,13 +82,18 @@ function getLabels(args: { [key: string]: any}) {
 function main() {
   const cliArgs = require('yargs').argv;
   const prNumber = cliArgs._[0];
+  const dryRun = cliArgs.dryRun;
 
-  console.log('authenticate');
   octokit.authenticate({ type: 'token', token });
 
   const labels = getLabels(cliArgs);
-  console.log('add labels', prNumber, labels);
-  addLabels(prNumber, labels);
+
+  console.log(`${dryRun ? '** PREVIEW ** ' : ''} Labels for ${prNumber}`);
+  console.log(labels);
+
+  if (!dryRun) {
+    addLabels(prNumber, labels);
+  }
 }
 
 main();
