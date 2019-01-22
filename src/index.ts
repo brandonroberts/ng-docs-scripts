@@ -12,6 +12,7 @@ const flags: { [key:string]: string } = {
   cleanup: 'PR action: cleanup',
   review: 'PR action: review',
   targets: 'PR target: master & patch',
+  master: 'PR target: master-only',
   blocked: 'PR state: blocked',
   low: 'risk: low',
   comm: 'state: community',
@@ -32,6 +33,7 @@ const flags: { [key:string]: string } = {
  * PR action: cleanup
  * PR action: review
  * PR target: master & patch
+ * PR target: master & patch
  * PR state: blocked
  * risk: low
  * state: community
@@ -49,7 +51,9 @@ async function addLabels(prNumber: number, labels: string[], owner = 'angular', 
   // look for common flags
   const result = await octokit.issues.addLabels({owner, repo, number: prNumber, labels});
 
-  console.log('Result', result);
+  if (result) {
+    console.log('Labels added successfully');
+  }
 }
 
 function getLabels(args: { [key: string]: any}) {
@@ -61,7 +65,7 @@ function getLabels(args: { [key: string]: any}) {
       flags.docs,
       flags.effort,
       flags.low,
-      flags.targets,
+      args.master ? flags.master : flags.targets,
       flags.comm,
       args.ref ? flags.ref : (args.feat ? flags.feat : flags.fix)
     ]);
